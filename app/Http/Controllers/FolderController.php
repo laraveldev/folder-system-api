@@ -30,7 +30,7 @@ class FolderController extends Controller
         $folder->icon()->create([
             'path' => $uploadedIcon,
         ]);
-        return $this->success(new FolderResource($folder->load('icon', 'user')), 201);
+        return $this->success(new FolderResource($folder->load('icon', 'user','parent')), 201);
     }
 
     public function show(string $id)
@@ -65,8 +65,8 @@ class FolderController extends Controller
                 'path' => $updatedIcon,
             ]);
         }
-        dd($folder->toArray());
-        return $this->success(new FolderResource($folder->load('icon', 'user')), 'Folder updated successfully');
+        // dd($folder->toArray());
+        return $this->success(new FolderResource($folder->load('icon', 'user', 'parent', 'children')), 'Folder updated successfully');
     }
 
     public function destroy(string $id)

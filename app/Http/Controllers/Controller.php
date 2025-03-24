@@ -54,7 +54,7 @@ abstract class Controller
     {
         $fullpath = storage_path('app/public/' . $path);
         if (file_exists($fullpath)) {
-            unlink($fullpath);
+            @unlink($fullpath);
         }
         return;
     }

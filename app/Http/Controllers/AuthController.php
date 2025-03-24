@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use Auth;
 use Illuminate\Http\Request;
 use App\Http\Requests\LoginRequest;
 use App\Http\Resources\UserResource;
@@ -11,7 +12,8 @@ use App\Http\Requests\RegisterRequest;
 
 class AuthController extends Controller
 {
-    public function register(RegisterRequest $request){
+    public function register(RegisterRequest $request)
+    {
         $uploadedImage = $this->uploadPhoto($request->file('image'));
 
         $user = new User();
@@ -25,24 +27,26 @@ class AuthController extends Controller
         ]);
         return $this->success([], 'User registered successfully', 201);
     }
-    public function login(LoginRequest $request){
+    public function login(LoginRequest $request)
+    {
         $user = User::where('email', $request->email)->first();
-        if(!$user || !Hash::check($request->password, $user->password)){
-            return $this->error('User not found or password is incorrect', 404);
+        if (!$user || !Hash::check($request->password, $user->password)) {
+            return $this->error('User not found or password is incorrect', 401);
         }
         $token = $user->createToken($user->name)->plainTextToken;
-        return $this->success($token, 'User logged successfully');
+        return $this->success([
+            'token' => $token,
+            'user' => new UserResource($user)
+        ], 'User logged successfully');
     }
-    public function logout(Request $request){
+    public function logout(Request $request)
+    {
         $this->deletePhoto($request->user()->image->path);
         $request->user()->tokens()->delete();
         return $this->success('User logged out successfully', 204);
     }
-    public function getUser(Request $request){
-        $user = $request->user();
-        if(!$user){
-            return $this->error('User not found', 404);
-        }
-        return $this->success(new UserResource($user));
+    public function getUser()
+    {
+        return $this->success(new UserResource(Auth::user()));
     }
 }
