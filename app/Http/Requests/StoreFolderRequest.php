@@ -4,6 +4,11 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
+/**
+ * @property integer $parent_id
+ * @property string $name
+ * @property string $icon
+ */
 class StoreFolderRequest extends FormRequest
 {
     /**
